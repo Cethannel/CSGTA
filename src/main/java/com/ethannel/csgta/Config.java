@@ -1,4 +1,4 @@
-package com.myname.mymodid;
+package com.ethannel.csgta;
 
 import java.io.File;
 
