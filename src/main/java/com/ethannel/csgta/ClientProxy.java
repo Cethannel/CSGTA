@@ -3,8 +3,10 @@ package com.ethannel.csgta;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import com.ethannel.csgta.utils.Vector3i;
 
@@ -13,23 +15,37 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
+
+import com.ethannel.csgta.DeobfuscationLayer;
 
 public class ClientProxy extends CommonProxy {
 
     public static KeyBinding myKeyBinding;
+    protected static Minecraft mc;
 
     @Override
     public void init(FMLInitializationEvent event) {
@@ -37,6 +53,7 @@ public class ClientProxy extends CommonProxy {
 
         // Create the key binding with corrected category name
         myKeyBinding = new KeyBinding("key.pickBlock.desc", Keyboard.KEY_G, "key.csgta.category");
+        mc = Minecraft.getMinecraft();
 
         // Register the keybinding
         ClientRegistry.registerKeyBinding(myKeyBinding);
@@ -57,16 +74,49 @@ public class ClientProxy extends CommonProxy {
             var world = Minecraft.getMinecraft().theWorld;
             var block = world.getBlock(pos.x, pos.y, pos.z);
             CSGTA.LOG.info("Looking at: " + block);
-            var blockId = Block.getIdFromBlock(block);
             var blockData = world.getBlockMetadata(pos.x, pos.y, pos.z);
-            String blockIDString = blockId + ":" + blockData;
-            CSGTA.LOG.info("Looking at: " + blockData);
-            StringSelection stringSelection = new StringSelection(blockIDString);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(stringSelection, null);
-            player.addChatMessage(
-                    new ChatComponentText("Copied: " + blockIDString + " to clipboard"));
+            copyIdFromBlock(block, blockData);
         }
+    }
+
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        Minecraft mc = Minecraft.getMinecraft();
+
+        DeobfuscationLayer.mc = mc;
+
+        // Ensure we're in a GUI screen and a key has been pressed
+        if (mc.currentScreen instanceof GuiContainer guiContainer) {
+            if (Keyboard.isKeyDown(myKeyBinding.getKeyCode())) {
+                int slotCount = getSlotCountWithID(mc.currentScreen, guiContainer.inventorySlots);
+                Slot selectedSlot = getSelectedSlotWithID(mc.currentScreen, slotCount, guiContainer.inventorySlots);
+                var stack = selectedSlot.getStack();
+                var item = stack.getItem();
+                var block = Block.getBlockFromItem(item);
+                if (block instanceof BlockAir) {
+                    return;
+                }
+                var blockData = stack.getItemDamage();
+                copyIdFromBlock(block, blockData);
+            }
+        }
+    }
+
+    public void copyIdFromBlock(Block block, int blockData) {
+        var player = Minecraft.getMinecraft().thePlayer;
+        var blockId = Block.getIdFromBlock(block);
+        String blockIDString = blockId + ":" + blockData;
+        CSGTA.LOG.info("Looking at: " + blockData);
+        copyToClipboard(blockIDString, player);
+    }
+
+    public static int getSlotCountWithID(GuiScreen currentScreen, Object container) {
+        return DeobfuscationLayer.getSlots(DeobfuscationLayer.asContainer(container)).size();
+    }
+
+    public static Slot getSelectedSlotWithID(GuiScreen currentScreen, int slotCount, Object container) {
+        return DeobfuscationLayer.getSelectedSlot(DeobfuscationLayer.asGuiContainer(currentScreen),
+                DeobfuscationLayer.asContainer(container), slotCount);
     }
 
     /**
@@ -101,4 +151,10 @@ public class ClientProxy extends CommonProxy {
         return target;
     }
 
+    private void copyToClipboard(String text, EntityPlayer player) {
+        StringSelection stringSelection = new StringSelection(text);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+        player.addChatMessage(new ChatComponentText("Copied: " + text + " to clipboard"));
+    }
 }
