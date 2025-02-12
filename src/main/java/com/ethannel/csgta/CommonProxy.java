@@ -17,7 +17,6 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
 
-        CSGTA.LOG.info(Config.greeting);
         CSGTA.LOG.info("I am CSGTA at version " + Tags.VERSION);
     }
 

@@ -6,12 +6,13 @@ import net.minecraftforge.common.config.Configuration;
 
 public class Config {
 
-    public static String greeting = "Hello World";
+    public static Boolean enableInventory = false;
 
     public static void synchronizeConfiguration(File configFile) {
         Configuration configuration = new Configuration(configFile);
 
-        greeting = configuration.getString("greeting", Configuration.CATEGORY_GENERAL, greeting, "How shall I greet?");
+        enableInventory = configuration.getBoolean("enableInventory", Configuration.CATEGORY_GENERAL, enableInventory,
+                "Enable picking in inventories [WARNING: may crash game if non-vanialla inventory]");
 
         if (configuration.hasChanged()) {
             configuration.save();

@@ -81,6 +81,9 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (!Config.enableInventory) {
+            return;
+        }
         Minecraft mc = Minecraft.getMinecraft();
 
         DeobfuscationLayer.mc = mc;
