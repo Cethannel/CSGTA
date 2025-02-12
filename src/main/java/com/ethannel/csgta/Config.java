@@ -11,8 +11,11 @@ public class Config {
     public static void synchronizeConfiguration(File configFile) {
         Configuration configuration = new Configuration(configFile);
 
-        enableInventory = configuration.getBoolean("enableInventory", Configuration.CATEGORY_GENERAL, enableInventory,
-                "Enable picking in inventories [WARNING: may crash game if non-vanialla inventory]");
+        enableInventory = configuration.getBoolean(
+            "enableInventory",
+            Configuration.CATEGORY_GENERAL,
+            enableInventory,
+            "Enable picking in inventories [WARNING: may crash game if non-vanialla inventory]");
 
         if (configuration.hasChanged()) {
             configuration.save();

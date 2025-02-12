@@ -34,15 +34,18 @@ public class DeobfuscationLayer {
     }
 
     public static boolean isValidGuiContainer(GuiScreen guiScreen) {
-        return (guiScreen != null) && !(guiScreen.getClass().getSimpleName().contains("CJB_GuiCrafting"))
-                && !(guiScreen.getClass().equals(GuiContainerCreative.class));
+        return (guiScreen != null) && !(guiScreen.getClass()
+            .getSimpleName()
+            .contains("CJB_GuiCrafting"))
+            && !(guiScreen.getClass()
+                .equals(GuiContainerCreative.class));
     }
 
     public static boolean isVanillaCraftingOutputSlot(Container container, Slot slot) {
         return ((container instanceof ContainerWorkbench) && (getSlotNumber(slot) == 0))
-                || ((container instanceof ContainerPlayer) && (getSlotNumber(slot) == 0))
-                || ((container instanceof ContainerFurnace) && (getSlotNumber(slot) == 2))
-                || ((container instanceof ContainerRepair) && (getSlotNumber(slot) == 2));
+            || ((container instanceof ContainerPlayer) && (getSlotNumber(slot) == 0))
+            || ((container instanceof ContainerFurnace) && (getSlotNumber(slot) == 2))
+            || ((container instanceof ContainerRepair) && (getSlotNumber(slot) == 2));
     }
 
     public static GuiContainer asGuiContainer(GuiScreen guiScreen) {
@@ -133,14 +136,13 @@ public class DeobfuscationLayer {
 
     public static boolean areStacksCompatible(ItemStack itemStack1, ItemStack itemStack2) {
         return ((itemStack1 == null) || (itemStack2 == null))
-                || (itemStack1.isItemEqual(itemStack2) && ItemStack.areItemStackTagsEqual(itemStack1, itemStack2));
+            || (itemStack1.isItemEqual(itemStack2) && ItemStack.areItemStackTagsEqual(itemStack1, itemStack2));
     }
 
     public static Slot getSelectedSlot(GuiContainer guiContainer, Container container, int slotCount) {
         for (int i = 0; i < slotCount; i++) {
             Slot slot = getSlot(container, i);
-            if (guiContainer.isMouseOverSlot(slot, getRequiredMouseX(), getRequiredMouseY()))
-                return slot;
+            if (guiContainer.isMouseOverSlot(slot, getRequiredMouseX(), getRequiredMouseY())) return slot;
         }
 
         return null;

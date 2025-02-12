@@ -36,8 +36,10 @@ public class GetBlockCommand implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         ChunkCoordinates playerpos = sender.getPlayerCoordinates();
-        var block = sender.getEntityWorld().getBlock(playerpos.posX, playerpos.posY - 1, playerpos.posZ);
-        var blockData = sender.getEntityWorld().getBlockMetadata(playerpos.posX, playerpos.posY - 1, playerpos.posZ);
+        var block = sender.getEntityWorld()
+            .getBlock(playerpos.posX, playerpos.posY - 1, playerpos.posZ);
+        var blockData = sender.getEntityWorld()
+            .getBlockMetadata(playerpos.posX, playerpos.posY - 1, playerpos.posZ);
         var id = Block.getIdFromBlock(block);
         CSGTA.LOG.info("Id is: " + id + ":" + blockData);
     }

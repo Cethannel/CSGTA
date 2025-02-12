@@ -4,6 +4,7 @@ package com.ethannel.csgta.utils;
  * Vector3i
  */
 public class Vector3i {
+
     public int x = 0;
     public int y = 0;
     public int z = 0;

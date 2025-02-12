@@ -3,10 +3,24 @@ package com.ethannel.csgta;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.util.List;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Slot;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import com.ethannel.csgta.utils.Vector3i;
 
@@ -16,31 +30,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
-
-import com.ethannel.csgta.DeobfuscationLayer;
 
 public class ClientProxy extends CommonProxy {
 
@@ -61,7 +50,9 @@ public class ClientProxy extends CommonProxy {
 
         // Register event handler for key input
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
+        FMLCommonHandler.instance()
+            .bus()
+            .register(this);
         CSGTA.LOG.info("Registered ClientProxy for key events.");
     }
 
@@ -114,12 +105,15 @@ public class ClientProxy extends CommonProxy {
     }
 
     public static int getSlotCountWithID(GuiScreen currentScreen, Object container) {
-        return DeobfuscationLayer.getSlots(DeobfuscationLayer.asContainer(container)).size();
+        return DeobfuscationLayer.getSlots(DeobfuscationLayer.asContainer(container))
+            .size();
     }
 
     public static Slot getSelectedSlotWithID(GuiScreen currentScreen, int slotCount, Object container) {
-        return DeobfuscationLayer.getSelectedSlot(DeobfuscationLayer.asGuiContainer(currentScreen),
-                DeobfuscationLayer.asContainer(container), slotCount);
+        return DeobfuscationLayer.getSelectedSlot(
+            DeobfuscationLayer.asGuiContainer(currentScreen),
+            DeobfuscationLayer.asContainer(container),
+            slotCount);
     }
 
     /**
@@ -128,15 +122,14 @@ public class ClientProxy extends CommonProxy {
      */
     public static Vector3i getLookingAtLocation(EntityPlayer player) {
         double reachDistance = player instanceof EntityPlayerMP mp ? mp.theItemInWorldManager.getBlockReachDistance()
-                : Minecraft.getMinecraft().playerController.getBlockReachDistance();
+            : Minecraft.getMinecraft().playerController.getBlockReachDistance();
 
         Vec3 posVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
 
         Vec3 lookVec = player.getLook(1);
 
         Vec3 modifiedPosVec = posVec
-                .addVector(lookVec.xCoord * reachDistance, lookVec.yCoord * reachDistance,
-                        lookVec.zCoord * reachDistance);
+            .addVector(lookVec.xCoord * reachDistance, lookVec.yCoord * reachDistance, lookVec.zCoord * reachDistance);
 
         MovingObjectPosition hit = player.worldObj.rayTraceBlocks(posVec, modifiedPosVec);
 
@@ -146,9 +139,9 @@ public class ClientProxy extends CommonProxy {
             target = new Vector3i(hit.blockX, hit.blockY, hit.blockZ);
         } else {
             target = new Vector3i(
-                    MathHelper.floor_double(modifiedPosVec.xCoord),
-                    MathHelper.floor_double(modifiedPosVec.yCoord),
-                    MathHelper.floor_double(modifiedPosVec.zCoord));
+                MathHelper.floor_double(modifiedPosVec.xCoord),
+                MathHelper.floor_double(modifiedPosVec.yCoord),
+                MathHelper.floor_double(modifiedPosVec.zCoord));
         }
 
         return target;
@@ -156,7 +149,8 @@ public class ClientProxy extends CommonProxy {
 
     private void copyToClipboard(String text, EntityPlayer player) {
         StringSelection stringSelection = new StringSelection(text);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Clipboard clipboard = Toolkit.getDefaultToolkit()
+            .getSystemClipboard();
         clipboard.setContents(stringSelection, null);
         player.addChatMessage(new ChatComponentText("Copied: " + text + " to clipboard"));
     }
