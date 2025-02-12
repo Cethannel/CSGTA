@@ -9,6 +9,9 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 
 @Mod(modid = CSGTA.MODID, version = Tags.VERSION, name = "CSGTA", acceptedMinecraftVersions = "[1.7.10]")
 public class CSGTA {
@@ -45,5 +48,10 @@ public class CSGTA {
     // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {
         proxy.serverStarting(event);
+    }
+
+    @Mod.EventHandler
+    public void onKeyPressed(GuiScreenEvent event) {
+        LOG.info("Found key pressed");
     }
 }
