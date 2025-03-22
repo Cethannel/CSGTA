@@ -51,8 +51,8 @@ public class ClientProxy extends CommonProxy {
         // Register event handler for key input
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance()
-            .bus()
-            .register(this);
+                .bus()
+                .register(this);
         CSGTA.LOG.info("Registered ClientProxy for key events.");
     }
 
@@ -61,6 +61,7 @@ public class ClientProxy extends CommonProxy {
         // Use consumeClick to ensure the action only occurs once per key press
         if (myKeyBinding.isPressed()) {
             var player = Minecraft.getMinecraft().thePlayer;
+            player.addChatMessage(new ChatComponentText("Getting block"));
             var pos = getLookingAtLocation(player);
             var world = Minecraft.getMinecraft().theWorld;
             var block = world.getBlock(pos.x, pos.y, pos.z);
@@ -106,14 +107,14 @@ public class ClientProxy extends CommonProxy {
 
     public static int getSlotCountWithID(GuiScreen currentScreen, Object container) {
         return DeobfuscationLayer.getSlots(DeobfuscationLayer.asContainer(container))
-            .size();
+                .size();
     }
 
     public static Slot getSelectedSlotWithID(GuiScreen currentScreen, int slotCount, Object container) {
         return DeobfuscationLayer.getSelectedSlot(
-            DeobfuscationLayer.asGuiContainer(currentScreen),
-            DeobfuscationLayer.asContainer(container),
-            slotCount);
+                DeobfuscationLayer.asGuiContainer(currentScreen),
+                DeobfuscationLayer.asContainer(container),
+                slotCount);
     }
 
     /**
@@ -122,14 +123,15 @@ public class ClientProxy extends CommonProxy {
      */
     public static Vector3i getLookingAtLocation(EntityPlayer player) {
         double reachDistance = player instanceof EntityPlayerMP mp ? mp.theItemInWorldManager.getBlockReachDistance()
-            : Minecraft.getMinecraft().playerController.getBlockReachDistance();
+                : Minecraft.getMinecraft().playerController.getBlockReachDistance();
 
         Vec3 posVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
 
         Vec3 lookVec = player.getLook(1);
 
         Vec3 modifiedPosVec = posVec
-            .addVector(lookVec.xCoord * reachDistance, lookVec.yCoord * reachDistance, lookVec.zCoord * reachDistance);
+                .addVector(lookVec.xCoord * reachDistance, lookVec.yCoord * reachDistance,
+                        lookVec.zCoord * reachDistance);
 
         MovingObjectPosition hit = player.worldObj.rayTraceBlocks(posVec, modifiedPosVec);
 
@@ -139,9 +141,9 @@ public class ClientProxy extends CommonProxy {
             target = new Vector3i(hit.blockX, hit.blockY, hit.blockZ);
         } else {
             target = new Vector3i(
-                MathHelper.floor_double(modifiedPosVec.xCoord),
-                MathHelper.floor_double(modifiedPosVec.yCoord),
-                MathHelper.floor_double(modifiedPosVec.zCoord));
+                    MathHelper.floor_double(modifiedPosVec.xCoord),
+                    MathHelper.floor_double(modifiedPosVec.yCoord),
+                    MathHelper.floor_double(modifiedPosVec.zCoord));
         }
 
         return target;
@@ -150,7 +152,7 @@ public class ClientProxy extends CommonProxy {
     private void copyToClipboard(String text, EntityPlayer player) {
         StringSelection stringSelection = new StringSelection(text);
         Clipboard clipboard = Toolkit.getDefaultToolkit()
-            .getSystemClipboard();
+                .getSystemClipboard();
         clipboard.setContents(stringSelection, null);
         player.addChatMessage(new ChatComponentText("Copied: " + text + " to clipboard"));
     }
