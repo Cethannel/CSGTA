@@ -27,6 +27,7 @@ import com.ethannel.csgta.utils.Vector3i;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -54,6 +55,13 @@ public class ClientProxy extends CommonProxy {
                 .bus()
                 .register(this);
         CSGTA.LOG.info("Registered ClientProxy for key events.");
+    }
+
+    @Override
+    public void preInit(FMLPreInitializationEvent event) {
+        Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
+
+        CSGTA.LOG.info("I am CSGTA at version " + Tags.VERSION);
     }
 
     @SubscribeEvent
